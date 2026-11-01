@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trash Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#f2e8d0; --brown:#473835; --orange:#cb6a47; --purple:#6b4d78;
+  --bg:#f6efdc; --surface:#fffaf0; --ink:#473835; --muted:#7d6b66;
+  --line:rgba(71,56,53,.28);
+  --hero-bg:#473835; --hero-ink:#f2e8d0; --hero-sub:#cdbfb3;
+  --chip-bg:#f2e8d0; --chip-ink:#473835;
+  --dot-bg:#f6efdc; --pill-bg:#e9dcc0; --pill-ink:#473835; --now:#cb6a47; --now-pill-bg:#6b4d78; --now-pill-ink:#fff;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#2a1f1d; --surface:#382a27; --ink:#f2e8d0; --muted:#b9a99f;
+    --line:rgba(242,232,208,.28);
+    --hero-bg:#f2e8d0; --hero-ink:#473835; --hero-sub:#7d6b66;
+    --chip-bg:#473835; --chip-ink:#f2e8d0;
+    --dot-bg:#2a1f1d; --pill-bg:#473835; --pill-ink:#f2e8d0; --now:#e07f5b; --now-pill-bg:#b497c4; --now-pill-ink:#2a1f1d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#2a1f1d; --surface:#382a27; --ink:#f2e8d0; --muted:#b9a99f;
+  --line:rgba(242,232,208,.28);
+  --hero-bg:#f2e8d0; --hero-ink:#473835; --hero-sub:#7d6b66;
+  --chip-bg:#473835; --chip-ink:#f2e8d0;
+  --dot-bg:#2a1f1d; --pill-bg:#473835; --pill-ink:#f2e8d0; --now:#e07f5b; --now-pill-bg:#b497c4; --now-pill-ink:#2a1f1d;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+main{max-width:720px;margin:0 auto;padding:40px 20px 64px}
+h1,h2{font-family:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;margin:0}
+header h1{font-size:clamp(28px,6vw,40px);font-weight:700;letter-spacing:-.02em}
+header p{margin:6px 0 28px;color:var(--muted)}
+
+.hero{background:var(--hero-bg);color:var(--hero-ink);border-radius:22px;padding:28px 26px 26px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:var(--orange);opacity:.55}
+.hero small{color:var(--hero-sub);font-size:15px;position:relative;z-index:1}
+.hero .wk{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(44px,12vw,72px);line-height:1;letter-spacing:-.03em;margin:6px 0 4px;position:relative;z-index:1}
+.hero .dates{font-size:18px;font-weight:500;position:relative;z-index:1}
+.rooms{display:flex;gap:12px;margin-top:22px;position:relative;z-index:1}
+.room{flex:1;background:var(--chip-bg);color:var(--chip-ink);border-radius:16px;padding:14px 16px}
+.room span{display:block;font-size:13px;opacity:.75}
+.room b{font-family:"Bricolage Grotesque",sans-serif;font-size:34px;line-height:1.1;font-weight:700}
+.left{margin-top:16px;font-size:14px;color:var(--hero-sub);position:relative;z-index:1}
+
+.note{margin:20px 0 0;padding:14px 16px;border-left:4px solid var(--orange);background:var(--surface);border-radius:0 12px 12px 0;font-size:14.5px;color:var(--muted)}
+.note b{color:var(--ink)}
+
+h2{font-size:22px;font-weight:700;margin:40px 0 20px}
+.timeline{list-style:none;margin:0;padding:0 0 0 30px;position:relative}
+.timeline::before{content:"";position:absolute;left:8px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.item{position:relative;padding:12px 0 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.item::before{content:"";position:absolute;left:-30px;top:16px;width:18px;height:18px;border-radius:50%;background:var(--dot-bg);border:2px solid var(--purple)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .item::before{border-color:#b497c4}}
+:root[data-theme="dark"] .item::before{border-color:#b497c4}
+.item.now::before{background:var(--now);border-color:var(--now);box-shadow:0 0 0 5px color-mix(in srgb,var(--now) 28%,transparent)}
+.item .t{font-weight:600;font-size:17px}
+.item.now .t{font-size:19px}
+.item .d{font-size:14px;color:var(--muted)}
+.tag{font-size:12px;font-weight:600;background:var(--now);color:#fff;border-radius:99px;padding:2px 10px;margin-left:8px;vertical-align:2px}
+.pair{display:flex;gap:8px;margin-top:2px}
+.pair span{background:var(--pill-bg);color:var(--pill-ink);font-weight:600;border-radius:10px;padding:4px 12px;font-variant-numeric:tabular-nums}
+.item.now .pair span{background:var(--now-pill-bg);color:var(--now-pill-ink)}
+@media (max-width:420px){.room b{font-size:28px}.hero{padding:24px 20px}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Trash schedule</h1>
+    <p>Who takes out the trash this week.</p>
+  </header>
+
+  <section class="hero" aria-live="polite">
+    <small>This week</small>
+    <div class="wk" id="wk">Week –</div>
+    <div class="dates" id="dates"></div>
+    <div class="rooms">
+      <div class="room"><span>Room</span><b id="r1">–</b></div>
+      <div class="room"><span>Room</span><b id="r2">–</b></div>
+    </div>
+    <div class="left" id="left"></div>
+  </section>
+
+  <p class="note"><b>Can't do your turn?</b> If you never leave trash or you're away, please tell us at the start of your week so everyone is aware and can help cover for you.</p>
+
+  <h2>Upcoming weeks</h2>
+  <ol class="timeline" id="timeline"></ol>
+
+</main>
+
+<script>
+const PAIRS = [[331,332],[333,334],[335,336],[337,338],[339,340],[341,342]];
+// Anchor: week 44 of 2026 starts Mon 26 Oct 2026 and belongs to rooms 335 & 336 (index 2)
+const ANCHOR = Date.UTC(2026, 9, 26);
+const DAY = 86400000;
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+function todayStockholm(){
+  let s;
+  try { s = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Stockholm"}).format(new Date()); }
+  catch(e){ const d=new Date(); s = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  const [y,m,d] = s.split("-").map(Number);
+  return Date.UTC(y, m-1, d);
+}
+function mondayOf(t){ const dow = new Date(t).getUTCDay(); return t - ((dow+6)%7)*DAY; }
+function isoWeek(monday){
+  const thu = new Date(monday + 3*DAY);
+  const y = thu.getUTCFullYear();
+  const jan1 = Date.UTC(y,0,1);
+  return Math.floor((thu.getTime()-jan1)/DAY/7) + 1 - (new Date(jan1).getUTCDay()===4 || ((new Date(jan1).getUTCDay()+6)%7)<=3 ? 0 : 0);
+}
+function weekNum(monday){
+  // standard ISO-8601: week containing the year's first Thursday is week 1
+  const thu = new Date(monday + 3*DAY);
+  const y = thu.getUTCFullYear();
+  const firstThu = Date.UTC(y,0,4);
+  const wk1Mon = mondayOf(firstThu);
+  return Math.floor((monday - wk1Mon)/(7*DAY)) + 1;
+}
+function pairFor(monday){
+  const n = Math.round((monday - ANCHOR)/(7*DAY));
+  return PAIRS[(((n + 2) % 6) + 6) % 6];
+}
+function fmt(t){ const d=new Date(t); return DOW[d.getUTCDay()]+" "+d.getUTCDate()+" "+MON[d.getUTCMonth()]; }
+function range(mon){ return fmt(mon)+" – "+fmt(mon+6*DAY); }
+
+const today = todayStockholm();
+const thisMon = mondayOf(today);
+const p = pairFor(thisMon);
+
+document.getElementById("wk").textContent = "Week " + weekNum(thisMon);
+document.getElementById("dates").textContent = range(thisMon);
+document.getElementById("r1").textContent = p[0];
+document.getElementById("r2").textContent = p[1];
+const daysLeft = Math.round((thisMon + 6*DAY - today)/DAY) + 1;
+document.getElementById("left").textContent = daysLeft === 1 ? "Last day of this turn" : daysLeft + " days left in this turn (including today)";
+
+const tl = document.getElementById("timeline");
+for (let i = 0; i <= 14; i++){
+  const mon = thisMon + i*7*DAY;
+  const pr = pairFor(mon);
+  const li = document.createElement("li");
+  li.className = "item" + (i<0 ? " past" : i===0 ? " now" : "");
+  const left = document.createElement("div");
+  const t = document.createElement("div"); t.className="t"; t.textContent = "Week " + weekNum(mon);
+  if (i===0){ const tag=document.createElement("span"); tag.className="tag"; tag.textContent="Now"; t.appendChild(tag); }
+  const d = document.createElement("div"); d.className="d"; d.textContent = range(mon);
+  left.append(t,d);
+  const pair = document.createElement("div"); pair.className="pair";
+  pr.forEach(r => { const s=document.createElement("span"); s.textContent=r; pair.appendChild(s); });
+  li.append(left,pair);
+  tl.appendChild(li);
+}
+</script>
+</body>
+</html>
